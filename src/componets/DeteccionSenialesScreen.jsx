@@ -1,128 +1,107 @@
-import React, { useRef, useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { Camera } from "expo-camera";
-import * as tf from '@tensorflow/tfjs';
-import '@tensorflow/tfjs-react-native'; // Importante agregar esta línea
+import React, { useState } from 'react';
+import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import axios from 'axios';
 
-const DeteccionSenialesScreen = () => {
-  const cameraRef = useRef(null);
-  const [hasPermission, setHasPermission] = useState(null);
-  const [modelo, setModelo] = useState(null);
-  const [predictions, setPredictions] = useState([]);
+export default function App() {
+  const [capturedImage, setCapturedImage] = useState(null);
+  const [detectedObjects, setDetectedObjects] = useState([]);
 
-  useEffect(() => {
-    const cargarModeloONNX = async () => {
-      try {
-        await tf.ready();
-        // Cargar el modelo como recurso local utilizando require
-        const loadedModel = await tf.loadGraphModel(require('./models/best.onnx'));
-        setModelo(loadedModel);
-      } catch (error) {
-        console.error('Error al cargar el modelo ONNX:', error);
-      }
-    };
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
 
-    cargarModeloONNX();
-
-    return () => {
-      if (modelo) {
-        modelo.dispose();
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestPermissionsAsync();
-      setHasPermission(status === "granted");
-    })();
-  }, []);
-
-  const handleCameraCapture = async () => {
-    if (cameraRef.current && modelo) {
-      const photo = await cameraRef.current.takePictureAsync({ base64: true });
+    if (!result.canceled) {
+      const formData = new FormData();
+      formData.append('image_file', {
+        uri: result.assets[0].uri,
+        name: 'image.jpg',
+        type: 'image/jpg',
+      });
 
       try {
-        const inputTensor = tf.tensor([photo.base64]); // Ajusta según el formato de entrada del modelo
-        const output = modelo.predict(inputTensor);
-        const resultados = output.dataSync();
+        const response = await axios.post('http://192.168.0.106:4000/detect', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
 
-        setPredictions(resultados);
+        console.log('Response Status Code:', response.status);
 
-        inputTensor.dispose();
-        output.dispose();
+        if (response.status === 200) {
+          const boxes = await response.data;
+          console.log('Response Body:', boxes);
+
+          // Actualiza el estado de los objetos detectados
+          setDetectedObjects(boxes);
+        } else {
+          console.log('Error in the request:', response.status);
+        }
       } catch (error) {
-        console.error('Error en la inferencia del modelo ONNX:', error);
+        console.log('Error during image recognition:', error.message);
       }
+
+      setCapturedImage(result.assets[0].uri);
     }
   };
 
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>No se ha otorgado permiso para acceder a la cámara.</Text>;
-  }
-
   return (
     <View style={styles.container}>
-      <Camera style={styles.camera} ref={cameraRef} type={Camera.Constants.Type.back}>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={handleCameraCapture} style={styles.button}>
-            <Text style={styles.buttonText}>Capturar</Text>
-          </TouchableOpacity>
-        </View>
-      </Camera>
+      <TouchableOpacity style={styles.button} onPress={pickImage}>
+        <Text style={styles.buttonText}> Seleccionar Imagen</Text>
+      </TouchableOpacity>
 
-      {/* Muestra las predicciones en la interfaz */}
-      {predictions.length > 0 && (
-        <View style={styles.predictionsContainer}>
-          {predictions.map((prediction, index) => (
-            <Text key={index} style={styles.predictionText}>
-              {prediction.class} - Confianza: {prediction.confidence.toFixed(3)}
-            </Text>
+      {capturedImage && (
+        <View style={styles.imageContainer}>
+          <Image source={{ uri: capturedImage }} style={styles.image} />
+          {detectedObjects.map(([x1, y1, x2, y2, label, confidence], index) => (
+            <View key={index} style={[styles.rectangle, { left: x1, top: y1, width: x2 - x1, height: y2 - y1 }]}>
+              <Text style={styles.label}>{`${label} (${confidence})`}</Text>
+            </View>
           ))}
         </View>
       )}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  camera: {
-    flex: 1,
-  },
-  buttonContainer: {
-    position: "absolute",
-    bottom: 20,
-    left: "50%",
-    transform: [{ translateX: -50 }],
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
-    backgroundColor: "#63B5E5",
+    backgroundColor: '#3498db',
     padding: 15,
     borderRadius: 10,
+    margin: 10,
   },
   buttonText: {
-    color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 18,
+    color: '#fff',
   },
-  predictionsContainer: {
-    position: "absolute",
-    top: 20,
-    left: 20,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    padding: 10,
-    borderRadius: 5,
-    maxWidth: 300,
+  imageContainer: {
+    alignItems: 'center',
   },
-  predictionText: {
+  image: {
+    width: 640,
+    height: 350,
+    marginBottom: 50,
+  },
+  rectangle: {
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: '#00FF00',
+    backgroundColor: 'transparent',
+  },
+  label: {
+    color: '#00FF00',
     fontSize: 14,
-    marginBottom: 5,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
 });
-
-export default DeteccionSenialesScreen;
