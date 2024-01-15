@@ -27,7 +27,8 @@
     "react-native-camera": "^4.2.1",
     "react-native-elements": "^3.4.3",
     "react-native-vector-icons": "^10.0.2",
-    "roboflow": "^0.2.0"
+    "roboflow": "^0.2.0",
+    "three": "^0.160.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

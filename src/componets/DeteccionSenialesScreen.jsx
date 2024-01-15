@@ -21,7 +21,7 @@ const DetectionScreen = () => {
             base64: true,
           });
 
-          const response = await axios.post('${serverIp}/detect', {
+          const response = await axios.post(`${serverIp}/detect`, {
             image: photo.base64,
           });
 
