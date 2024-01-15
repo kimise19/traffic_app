@@ -3,7 +3,6 @@ import React from "react";
 import { StyleSheet, View, Text , TouchableWithoutFeedback} from "react-native";
 import { Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 
 const MainMenu = () => {
@@ -41,7 +40,7 @@ const MainMenu = () => {
         </View>
         <Button
           title="Leyes"
-          onPress={() => console.log("Botón Leyes presionado")}
+          onPress={() => navigation.navigate('LawPage')}
           buttonStyle={styles.button}
           titleStyle={styles.titleStyle}
         />

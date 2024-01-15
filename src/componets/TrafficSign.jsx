@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, StyleSheet, Dimensions, ActivityIndicator } from 'react-native';
-import DescripcionPage from './DescripcionPage';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // Asegúrate de importar el ícono adecuado
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Dimensions,
+  ActivityIndicator,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import DescripcionPage from './DescripcionPage'; // Importa tu componente DescripcionPage
 
 const TransitoPage = ({ navigation }) => {
+  const [loading, setLoading] = useState(true);
   const [signalCategories, setSignalCategories] = useState({});
-  const [addedImageUrls, setAddedImageUrls] = useState(new Set());
   const [selectedSignal, setSelectedSignal] = useState(null);
+  const [addedImageUrls, setAddedImageUrls] = useState(new Set());
 
   useEffect(() => {
     fetchSignals();
@@ -14,11 +24,15 @@ const TransitoPage = ({ navigation }) => {
 
   const fetchSignals = async () => {
     try {
+      setLoading(true);
+
       const response = await fetch('https://us-central1-swtesis-e0343.cloudfunctions.net/app/api/seniales');
       const data = await response.json();
       organizeSignalsByCategory(data);
     } catch (error) {
       console.error('Failed to load signals', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -31,7 +45,7 @@ const TransitoPage = ({ navigation }) => {
 
     signals.sort((a, b) => (order[a.id_clase] || Number.POSITIVE_INFINITY) - (order[b.id_clase] || Number.POSITIVE_INFINITY));
 
-    const newSignalCategories = { ...signalCategories };
+    const newSignalCategories = {};
 
     signals.forEach((signal) => {
       const category = signal.tipo_senial;
@@ -40,14 +54,14 @@ const TransitoPage = ({ navigation }) => {
       if (!addedImageUrls.has(imageUrl)) {
         newSignalCategories[category] = newSignalCategories[category] || [];
         newSignalCategories[category].push(signal);
-        setAddedImageUrls(new Set([...addedImageUrls, imageUrl]));
+        setAddedImageUrls((prevSet) => new Set([...prevSet, imageUrl]));
       }
     });
 
     setSignalCategories(newSignalCategories);
   };
 
-  const buildImageGrid = (category, crossAxisCount) => (
+  const buildImageGrid = (category) => (
     <View style={styles.imageGrid}>
       {signalCategories[category].map((signal, index) => (
         <SignalImage key={index} signal={signal} onPress={() => setSelectedSignal(signal)} />
@@ -57,14 +71,15 @@ const TransitoPage = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* Header personalizado */}
       <Header navigation={navigation} />
+
+      {loading && <ActivityIndicator style={styles.loader} size="large" color="#63B5E5" />}
 
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         {Object.keys(signalCategories).map((category) => (
           <View key={category}>
             <SignalCategory title={category} />
-            {buildImageGrid(category, calculateCrossAxisCount(Dimensions.get('window').width))}
+            {buildImageGrid(category)}
           </View>
         ))}
       </ScrollView>
@@ -97,15 +112,13 @@ const SignalCategory = ({ title }) => (
   </View>
 );
 
-const Header = () => (
+const Header = ({ navigation }) => (
   <View style={styles.headerContainer}>
-    <TouchableOpacity onPress={() => navigation.navegate}>
+    <TouchableOpacity onPress={() => navigation.navigate('MainMenu')}>
       <Icon name="arrow-back" size={30} color="#63B5E5" />
     </TouchableOpacity>
   </View>
 );
-
-const calculateCrossAxisCount = (width) => Math.floor(width / 120);
 
 const styles = StyleSheet.create({
   container: {
@@ -131,15 +144,25 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   image: {
-    width: Dimensions.get('window').width / calculateCrossAxisCount(Dimensions.get('window').width) - 16,
+    width: Dimensions.get('window').width / Math.floor(Dimensions.get('window').width / 120) - 16,
     height: 100,
-    borderRadius: 8,
-    marginBottom: 8,
+    borderRadius: 10,
+    marginBottom: 10,
   },
   headerContainer: {
-    padding: 16,
+    padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  loader: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
     alignItems: 'center',
   },
 });

@@ -5,6 +5,7 @@ import Main from "./src/componets/Main.jsx";
 import MainMenu from "./src/componets/MainMenu.jsx";
 import TrafficSign from "./src/componets/TrafficSign.jsx";
 import DeteccionSenialesScreen from "./src/componets/DeteccionSenialesScreen.jsx";
+import LawPage  from "./src/componets/LawPage.jsx";
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,7 @@ const App = () => {
           component={Main}
           options={{ headerShown: false }} // Oculta el encabezado en Main
         />
+        
         <Stack.Screen
           name="MainMenu"
           component={MainMenu}
@@ -30,6 +32,11 @@ const App = () => {
         <Stack.Screen
           name="TrafficSign"
           component={TrafficSign}
+          options={{ headerShown: false }} // Oculta el encabezado en MainMenu
+        />
+         <Stack.Screen
+          name="LawPage"
+          component={LawPage}
           options={{ headerShown: false }} // Oculta el encabezado en MainMenu
         />
       </Stack.Navigator>
