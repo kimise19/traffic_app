@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import DescripcionPage from './DescripcionPage'; // Importa tu componente DescripcionPage
+import DescripcionPage from './DescripcionPage'; 
 
 const TransitoPage = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -40,7 +40,6 @@ const TransitoPage = ({ navigation }) => {
     const order = {
       'R1': 1,
       'R2': 2,
-      // ... (add the rest of your order mapping)
     };
 
     signals.sort((a, b) => (order[a.id_clase] || Number.POSITIVE_INFINITY) - (order[b.id_clase] || Number.POSITIVE_INFINITY));

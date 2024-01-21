@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
 import axios from 'axios';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
+import objectData from '../componets/data3D/data.json';
 
 const DetectionScreen = () => {
   const cameraRef = useRef(null);
   const [isCameraReady, setCameraReady] = useState(false);
-  const [detectedObjectName, setDetectedObjectName] = useState(null);
-  const [detectedObjectRect, setDetectedObjectRect] = useState(null);
+  const [detectedObject, setDetectedObject] = useState(null);
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const serverIp = 'http://192.168.0.106:4000';
 
@@ -17,7 +17,7 @@ const DetectionScreen = () => {
         const { status } = await Camera.requestCameraPermissionsAsync();
         if (status === 'granted') {
           const photo = await cameraRef.current.takePictureAsync({
-            quality: 1, // Ajusta la calidad para aumentar la resolución (1 es la máxima)
+            quality: 1,
             base64: true,
           });
 
@@ -30,25 +30,16 @@ const DetectionScreen = () => {
 
           if (response.status === 200 && response.data.length > 0) {
             const detectedItem = response.data[0];
-            setDetectedObjectName(detectedItem[4]);
-
-            // Calcular los puntos para formar el rectángulo
-            const x1 = (detectedItem[0] / 4320) * screenWidth;
-            const y1 = (detectedItem[1] / 5760) * screenHeight;
-            const x2 = (detectedItem[2] / 4320) * screenWidth;
-            const y2 = (detectedItem[3] / 5760) * screenHeight;
-            setDetectedObjectRect({ x1, y1, x2, y2 });
+            setDetectedObject(detectedItem);
           } else {
-            // No hay objeto detectado, limpiar estados
-            setDetectedObjectName(null);
-            setDetectedObjectRect(null);
+            // No hay objeto detectado, limpiar estado
+            setDetectedObject(null);
           }
         }
       }
     } catch (error) {
       console.error('Error during object detection:', error.message);
     } finally {
-      // Continuar procesando fotogramas
       requestAnimationFrame(processFrame);
     }
   };
@@ -75,7 +66,6 @@ const DetectionScreen = () => {
 
   useEffect(() => {
     if (isCameraReady) {
-      // Comenzar el procesamiento de fotogramas
       requestAnimationFrame(processFrame);
     }
   }, [isCameraReady]);
@@ -91,23 +81,22 @@ const DetectionScreen = () => {
         onMountError={(error) => console.error('Camera mount error:', error.message)}
         type={Camera.Constants.Type.back}
       />
-      {detectedObjectName && detectedObjectRect && (
+      {detectedObject && (
         <>
-          {/* Dibujar el rectángulo */}
-          <View
-            style={[
-              styles.detectedObjectRect,
-              {
-                left: detectedObjectRect.x1,
-                top: detectedObjectRect.y1,
-                width: detectedObjectRect.x2 - detectedObjectRect.x1,
-                height: detectedObjectRect.y2 - detectedObjectRect.y1,
-              },
-            ]}
+          {/* Mostrar la imagen del objeto */}
+          <Image
+            style={{
+              position: 'absolute',
+              left: (detectedObject[0] / 4320) * screenWidth,
+              top: (detectedObject[1] / 5760) * screenHeight,
+              width: (detectedObject[2] / 4320) * screenWidth - (detectedObject[0] / 4320) * screenWidth,
+              height: (detectedObject[3] / 5760) * screenHeight - (detectedObject[1] / 5760) * screenHeight,
+            }}
+            source={{ uri: objectData.find(obj => obj.name === detectedObject[4])?.image }}
           />
           {/* Mostrar el nombre del objeto */}
-          <View style={[styles.detectedObjectContainer, { left: detectedObjectRect.x1, top: detectedObjectRect.y1 - 30 }]}>
-            <Text style={styles.detectedObjectNameText}>{detectedObjectName}</Text>
+          <View style={[styles.detectedObjectContainer, { left: (detectedObject[0] / 4320) * screenWidth, top: (detectedObject[1] / 5760) * screenHeight - 30 }]}>
+            <Text style={styles.detectedObjectNameText}>{detectedObject[4]}</Text>
           </View>
         </>
       )}
@@ -116,11 +105,6 @@ const DetectionScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  detectedObjectRect: {
-    position: 'absolute',
-    borderColor: 'green',
-    borderWidth: 2,
-  },
   detectedObjectContainer: {
     position: 'absolute',
     backgroundColor: 'rgba(0, 255, 0, 0.7)',
