@@ -6,7 +6,109 @@
     },
     {
         "name": "Zona de amenza volcanica",
-        "image": "https://w7.pngwing.com/pngs/823/965/png-transparent-volcano-lava-cartoon-volcano-cartoon-character-leave-the-material-orange-thumbnail.png",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900831/3d/qm4plctmaexbefi8cnnm.png",
+        "description": "Una zona de amenaza volcánica es un área geográfica propensa a la actividad volcánica, donde la presencia de volcanes aumenta el riesgo de erupciones y sus consecuencias asociadas.g"
+    },
+    {
+        "name": "Zona de seguridad",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900831/3d/hurcuxqzgouhwice3p7c.png",
+        "description": "Indica que estás ingresando a una zona designada como área de seguridad, se coloca para alertar a los conductores sobre la cercanía de actividad volcánica y la posibilidad de riesgos asociados."
+    },
+    {
+        "name": "Parada de bus",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/ntbphjs5ikidi9grkyx7.png",
+        "description": "Indican el área donde los buses de transporte público deben detenerse para tomar y/o dejar pasajeros"
+    },
+    {
+        "name": "Zona de derrumbes izquierda",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900831/3d/fvr8d4wr1uwoiwku2lht.png",
+        "description": "Señal utilizada para advertir la aproximación a zonas de derrumbes al costado izquierdo o derecho la de circulación normal, con posibles desprendimientos de materiales en la ví"
+    },
+    {
+        "name": "Orquideario",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/wy9dl63n5zpulye7vi5t.png",
+        "description": "Indica a los conductores la existencia de un lugar dedicado al cultivo y exhibición de orquídeas, una de las flores más representativas del país."
+    },
+    {
+        "name": "Aproximacion a semaforo",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900831/3d/mo4fwvu0vv8xua0slv69.png",
+        "description": "Notifica al conductor de la existencia más adelante de un cruce controlado con semáforo,por lo que deberá tomar las precauciones para detener el vehículo en caso de que dicho dispositivo indique luz roja"
+    },
+    {
+        "name": "Metros",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/um2s5cfc7o8robsfxyf6.png",
+        "description": "Esta señal indica la distancia de aproximación en metros a un peligro en un tramo de la vía"
+    }
+    ,
+    {
+        "name": "Una via derecha",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900831/3d/grxzdc0pyskaeftgrwzb.png",
+        "description": "Una vía derecha es un camino o carretera que sigue una trayectoria recta o sinuosa sin desviarse hacia los lados, proporcionando una ruta directa y eficiente."
+    },
+    {
+        "name": "Pesca",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900831/3d/bzriwuzyrcirfotiw90o.png",
+        "description": "Indica a los conductores que están cerca de una zona donde se permite la pesca turística, por lo que deben estar atentos a posibles pescadores y vehículos relacionados con esta actividad."
+    },
+    {
+        "name": "Hombres trabajando",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/vwylknmk3tlq35cm4stp.png",
+        "description": "Esta señal advierte la proximidad a un tramo de la vía que se ve temporalmente afectado por la ejecución de una obra que perturba el tránsito en la calzada o sus zonas aledañas"
+        
+    },
+    {
+        "name": "No arrojar basura - Azul",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/qptg5l2s5afksshrpyph.png",
+        "description": "Es una indicación para los conductores y peatones de que no deben desechar residuos, desperdicios u objetos en la vía pública."
+    },
+    {
+        "name": "No entre",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/u8b8p2fft6khbaajpn3a.png",
+        "description": "Prohíbe la continuación del movimiento directo del flujo vehicular que se aproxima, más allá del lugar en que esta señal se encuentra instalada. Se debe ubicar donde el conductor pueda comprender fácilmente cuál es la vía con prohibición de entrar."
+    },
+    {
+        "name": "Estacion de trenes",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/wrvphvroz7idhlmpit3y.png",
+        "description": "Indica la cercanía a una estación de trenes que advierte a los conductores de la presencia de una estación ferroviaria cercana, por lo que deben estar atentos a la posible presencia de trenes, así como a los cruces ferroviarios y a las reglas específicas de tráfico en ese entorno."
+    },
+    {
+        "name": "Delineadores de curva horizontal",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/tep6skgh1qewaavabfhe.png",
+        "description": "Esta señal se utiliza para indicar el cambio de rasante en el sentido de circulación que debe seguir el conductor. Se utiliza en radio de curvas abiertas pudiendo ser a la izquierda o a la derecha según el alineamiento de la curva."
+    },
+    {
+        "name": "Ascenso pronunciado",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/shezbijmrd9ilrj3y3vp.png",
+        "description": "Esta señal se utiliza para advertir la aproximación a un ascenso pronunciado con pendiente superior al 10%"
+    },
+    {
+        "name": "Altura maxima -Serie complementaria-",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/at6h6d8j91nbacgpkep1.png",
+        "description": "Debe utilizarse para advertir que más adelante en la vía existe una restricción de altura en un túnel, puente, paso a desnivel, u otros (< 4,20 m). La señal debe indicar la altura máxima permitida"
+    },
+    {
+        "name": "Altura maxima Serie de limites maximos",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/vctttyvd2fnnsumrgg2m.png",
+        "description": "Debe utilizarse para advertir que más adelante en la vía existe una restricción de altura en un túnel, puente, paso a desnivel, u otros (< 4,20 m). La señal debe indicar la altura máxima permitida"
+    },
+    {
+        "name": "Ceda el paso",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/o5rhlesq2qy3h2infavu.png",
+        "description": "Se instala en los accesos a las intersecciones, donde una de las vías tiene prioridad sobre otra, y obliga al vehículo a detenerse frente a esta señal antes de ingresar a la intersecció   "
+    },
+    {
+        "name": "Animales en via",
+        "image": "https://res.cloudinary.com/mashcas/image/upload/v1705900830/3d/ipfkkcm9gpjsafgqiiv2.png",
+        "description": "Esta señal sirve para advertir la probable presencia de animales en la vía, sean estos domésticos o de ganado"
+    },
+    {
+        "name": "",
+        "image": "",
+        "description": ""
+    },
+    {
+        "name": "",
+        "image": "",
         "description": ""
     }
 ]

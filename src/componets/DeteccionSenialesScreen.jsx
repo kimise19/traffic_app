@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Camera } from 'expo-camera';
 import axios from 'axios';
-import { View, Text, StyleSheet, Dimensions, Image } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity  } from 'react-native';
 import objectData from '../componets/data3D/data.json';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const DetectionScreen = () => {
+
+
+const DetectionScreen = ({ navigation }) => {
   const cameraRef = useRef(null);
   const [isCameraReady, setCameraReady] = useState(false);
+  
   const [detectedObject, setDetectedObject] = useState(null);
   const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
   const serverIp = 'http://192.168.0.106:4000';
@@ -14,6 +18,9 @@ const DetectionScreen = () => {
   const processFrame = async () => {
     try {
       if (cameraRef.current && isCameraReady) {
+         const goBackToMainMenu = () => {
+    navigation.navigate('MainMenu');
+  };
         const { status } = await Camera.requestCameraPermissionsAsync();
         if (status === 'granted') {
           const photo = await cameraRef.current.takePictureAsync({
@@ -69,7 +76,9 @@ const DetectionScreen = () => {
       requestAnimationFrame(processFrame);
     }
   }, [isCameraReady]);
-
+  const goBackToMainMenu = () => {
+    navigation.navigate('MainMenu');
+  };
   return (
     <View style={{ flex: 1 }}>
       <Camera
@@ -91,6 +100,7 @@ const DetectionScreen = () => {
               top: (detectedObject[1] / 5760) * screenHeight,
               width: (detectedObject[2] / 4320) * screenWidth - (detectedObject[0] / 4320) * screenWidth,
               height: (detectedObject[3] / 5760) * screenHeight - (detectedObject[1] / 5760) * screenHeight,
+              resizeMode: 'contain', 
             }}
             source={{ uri: objectData.find(obj => obj.name === detectedObject[4])?.image }}
           />
@@ -100,6 +110,10 @@ const DetectionScreen = () => {
           </View>
         </>
       )}
+      {/* Botón flotante para regresar al MainMenu */}
+      <TouchableOpacity style={styles.floatingButton} onPress={goBackToMainMenu}>
+        <Icon name="arrow-back" size={40} color="#63B5E5" />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -114,6 +128,13 @@ const styles = StyleSheet.create({
   detectedObjectNameText: {
     color: 'white',
     fontSize: 16,
+  },
+  floatingButton: {
+    position: 'absolute',
+    top: 20,
+    left: 20,
+    borderRadius: 30,
+    padding: 20,
   },
 });
 
