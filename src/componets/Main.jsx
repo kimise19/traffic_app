@@ -10,7 +10,7 @@ const Main = () => {
     <View style={styles.container}>
       {/* Logo */}
       <Image
-        source={require("./images/logo.png")}  // Asegúrate de proporcionar la ruta correcta a tu logo
+        source={require("./images/logo.png")}  
         style={styles.logo}
       />
 
@@ -51,10 +51,10 @@ const styles = StyleSheet.create({
     marginBottom: 26,
     marginHorizontal: 41,
     alignItems: "center",
-    borderWidth: 1,         // Agrega un borde de 1 píxel alrededor del contenedor
-    borderColor: '#63B5E5',  // Establece el color del borde a blanco
-    paddingHorizontal: 19,  // Ajusta el espacio horizontal para el margen
-    paddingVertical: 10,    // Ajusta el espacio vertical para el margen
+    borderWidth: 1,         
+    borderColor: '#63B5E5',  
+    paddingHorizontal: 19, 
+    paddingVertical: 10,    
     borderRadius: 10,
   },
   infoTitle: {

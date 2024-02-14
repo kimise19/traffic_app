@@ -15,11 +15,11 @@ const DetectionScreen = ({ navigation }) => {
 
   // Añadir animación de rotación
   const spinValue = useRef(new Animated.Value(0)).current;
-
+ 
   useEffect(() => {
     const spinAnimation = Animated.timing(spinValue, {
       toValue: 1,
-      duration: 10000, // Duración de la rotación en milisegundos
+      duration: 5000, // Duración de la rotación en milisegundos
       easing: Easing.linear,
       useNativeDriver: true,
     });
@@ -57,7 +57,7 @@ const DetectionScreen = ({ navigation }) => {
           } else {
             // No hay objeto detectado, limpiar estado
            // setDetectedObject(null);
-            setShowDescription(false);
+            //setShowDescription(false);
           }
         } else {
           // Si los permisos no han sido concedidos, manejar el caso aquí
@@ -177,14 +177,12 @@ const styles = StyleSheet.create({
     padding: 15,
     width: '80%', // Ancho del 80% de la pantalla
     alignSelf: 'center', // Centrar horizontalmente
-    //top: screenHeight - 120, // Ajustar la posición desde la parte inferior
     elevation: 5,
   },
   descriptionText: {
     color: '#ecf0f1', // Blanco más claro
     fontSize: 15,
     textAlign: 'center', // Centrar el texto horizontalmente
-   // fontFamily: '',
   },
 });
 

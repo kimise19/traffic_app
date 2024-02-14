@@ -1,168 +1,125 @@
-import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Dimensions,
-  ActivityIndicator,
-} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, TouchableOpacity, ActivityIndicator, ScrollView, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import DescripcionPage from './DescripcionPage'; 
-
-const TransitoPage = ({ navigation }) => {
-  const [loading, setLoading] = useState(true);
-  const [signalCategories, setSignalCategories] = useState({});
-  const [selectedSignal, setSelectedSignal] = useState(null);
-  const [addedImageUrls, setAddedImageUrls] = useState(new Set());
-
-  useEffect(() => {
-    fetchSignals();
-  }, []);
-
-  const fetchSignals = async () => {
-    try {
-      setLoading(true);
-
-      const response = await fetch('https://us-central1-swtesis-e0343.cloudfunctions.net/app/api/seniales');
-      const data = await response.json();
-      organizeSignalsByCategory(data);
-    } catch (error) {
-      console.error('Failed to load signals', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const organizeSignalsByCategory = (signals) => {
-    const order = {
-      'R1': 1,
-      'R2': 2,
-    };
-
-    signals.sort((a, b) => (order[a.id_clase] || Number.POSITIVE_INFINITY) - (order[b.id_clase] || Number.POSITIVE_INFINITY));
-
-    const newSignalCategories = {};
-
-    signals.forEach((signal) => {
-      const category = signal.tipo_senial;
-      const imageUrl = signal.imagen;
-
-      if (!addedImageUrls.has(imageUrl)) {
-        newSignalCategories[category] = newSignalCategories[category] || [];
-        newSignalCategories[category].push(signal);
-        setAddedImageUrls((prevSet) => new Set([...prevSet, imageUrl]));
-      }
-    });
-
-    setSignalCategories(newSignalCategories);
-  };
-
-  const buildImageGrid = (category) => (
-    <View style={styles.imageGrid}>
-      {signalCategories[category].map((signal, index) => (
-        <SignalImage key={index} signal={signal} onPress={() => setSelectedSignal(signal)} />
-      ))}
-    </View>
-  );
-
-  return (
-    <View style={styles.container}>
-      <Header navigation={navigation} />
-
-      {loading && <ActivityIndicator style={styles.loader} size="large" color="#63B5E5" />}
-
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        {Object.keys(signalCategories).map((category) => (
-          <View key={category}>
-            <SignalCategory title={category} />
-            {buildImageGrid(category)}
-          </View>
-        ))}
-      </ScrollView>
-
-      {selectedSignal && (
-        <DescripcionPage
-          signal={selectedSignal}
-          onClose={() => setSelectedSignal(null)}
-        />
-      )}
-    </View>
-  );
-};
-
-const SignalImage = ({ signal, onPress }) => (
-  <TouchableOpacity onPress={onPress}>
-    <Image
-      style={[styles.image, { marginRight: 1 }]}
-      source={{ uri: signal.imagen }}
-      resizeMode="cover"
-      PlaceholderContent={<ActivityIndicator />}
-    />
-  </TouchableOpacity>
-);
-
-const SignalCategory = ({ title }) => (
-  <View>
-    <Text style={styles.categoryTitle}>{title}</Text>
-    <View style={styles.divider} />
-  </View>
-);
 
 const Header = ({ navigation }) => (
   <View style={styles.headerContainer}>
     <TouchableOpacity onPress={() => navigation.navigate('MainMenu')}>
-      <Icon name="arrow-back" size={30} color="#63B5E5" />
+      <Icon name="arrow-back" size={50} color="#63B5E5" />
     </TouchableOpacity>
   </View>
 );
 
+const TransitoPage = () => {
+  const navigation = useNavigation();
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('https://us-central1-swtesis-e0343.cloudfunctions.net/app/api/seniales');
+        setData(response.data);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const renderImagesByType = () => {
+    const imagesByType = {};
+
+    if (data) {
+      data.forEach(item => {
+        const { tipo_senial } = item;
+
+        if (!imagesByType[tipo_senial]) {
+          imagesByType[tipo_senial] = [];
+        }
+
+        imagesByType[tipo_senial].push(item);
+      });
+    }
+
+    return imagesByType;
+  };
+
+  const handleImagePress = (image) => {
+    navigation.navigate('ImageDetailPage', { image });
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#63B5E5" />
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView style={styles.container}>
+      <Header navigation={navigation} />
+      {error ? (
+        <Text>Error al cargar datos</Text>
+      ) : (
+        <View>
+          {Object.entries(renderImagesByType()).map(([type, images]) => (
+            <View key={type} style={styles.typeContainer}>
+              <Text style={styles.title}>{type}</Text>
+              <View style={styles.imageRow}>
+                {images.map((image, index) => (
+                  <TouchableOpacity key={index} style={styles.imageContainer} onPress={() => handleImagePress(image)}>
+                    <Image source={{ uri: image.imagen }} style={styles.image} />
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
+    </ScrollView>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    padding: 20,
     backgroundColor: '#2C2C38',
   },
-  scrollViewContent: {
-    padding: 16,
+  typeContainer: {
+    marginBottom: 20,
   },
-  categoryTitle: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#ADD8E6',
     marginVertical: 8,
   },
-  divider: {
-    borderBottomWidth: 2,
-    borderBottomColor: '#FFFFFF',
-  },
-  imageGrid: {
+  imageRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 16,
   },
-  image: {
-    width: Dimensions.get('window').width / Math.floor(Dimensions.get('window').width / 120) - 16,
-    height: 100,
-    borderRadius: 10,
+  imageContainer: {
+    marginRight: 'auto',
     marginBottom: 10,
   },
-  headerContainer: {
-    padding: 20,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  image: {
+    width: 100,
+    height: 120,
+    borderRadius: 10,
   },
-  loader: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#2C2C38',
   },
 });
 
